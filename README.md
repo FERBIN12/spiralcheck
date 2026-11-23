@@ -77,7 +77,9 @@ Libraries and tools:
 - **Runtime libraries: none.** The FFT, spectrum, fitting, and plots are written from scratch in plain JavaScript.
 - Node.js built-in test runner (`node --test`) for tests.
 - Python's built-in `http.server` (optional) to serve the files locally.
-- Playwright with headless Chromium was used once to capture `docs/screenshot.png`; it is not part of the app.
+- Playwright with headless Chromium was used to capture `docs/screenshot.png` and to record the demo video (`tools/record_demo.py`, `tools/build_video.py`); it is not part of the app.
+
+Demo video (captions only): https://youtu.be/B67WwUBICbU
 
 ## Disclaimer
 
