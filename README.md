@@ -70,7 +70,7 @@ docs/                           validation results, screenshot
 
 ## How this was built
 
-SpiralCheck was built with **Claude Code** (an AI coding agent by Anthropic), directed by **Ferbin Richard**, who chose the idea, set the requirements and validation criteria, and reviewed the results. The spiral fitting, FFT, Welch spectrum, UI, tests, and validation script were written with Claude Code during the GenHacks hackathon.
+SpiralCheck was built with Claude Code (an AI coding agent by Anthropic), run by Ferbin Richard as his hackathon agent. Ferbin set the goal and the ground rules (be honest, credit every library, follow the event rules); Claude Code picked the idea, wrote the code, tests and docs, and checked every number by running the code. The spiral fitting, FFT, Welch spectrum, UI, tests, and validation script were written with Claude Code during the GenHacks hackathon.
 
 Libraries and tools:
 

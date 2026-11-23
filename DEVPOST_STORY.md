@@ -19,7 +19,7 @@ Private by design: no server, no account, no analytics, no network requests. Not
 - Signal chain (src/spiral.js, a pure module with no DOM): fit r = a + b*theta including a search for the spiral center, unwrap the angle, take the radial error, resample to 100 Hz, high-pass to remove slow hand drift, then a Welch power spectrum (our own radix-2 FFT, Hann window) with sub-bin peak interpolation.
 - Tests: 27 unit and synthetic tests with Node's built-in test runner (`node --test`, 27/27 pass).
 - Validation: `tools/validate.mjs` draws synthetic spirals with irregular pointer timing, position noise, slow drift and a sinusoidal tremor of known frequency (4 to 12 Hz) and amplitude (0.5 to 4 px), 10 random seeds per case, and writes docs/validation.md.
-- **Built with Claude Code (an AI coding agent by Anthropic), directed by Ferbin Richard**, who chose the idea, set the requirements and validation criteria, and reviewed the results. The demo video and screenshot were recorded with Playwright (headless Chromium) driving the real app.
+- **SpiralCheck was built with Claude Code (an AI coding agent by Anthropic), run by Ferbin Richard as his hackathon agent. Ferbin set the goal and the ground rules (be honest, credit every library, follow the event rules); Claude Code picked the idea, wrote the code, tests and docs, and checked every number by running the code.** The demo video and screenshot were recorded with Playwright (headless Chromium) driving the real app.
 
 ## Challenges we ran into
 - Real pointer events arrive at uneven intervals (and only 60 Hz on some devices), but an FFT needs evenly spaced samples. We resample to 100 Hz and test both 120 Hz and 60 Hz pointer rates with +/-30% timing jitter.
