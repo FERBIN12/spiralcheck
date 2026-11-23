@@ -1,0 +1,17 @@
+node_modules/
+*.mp4
+*.mov
+*.wav
+*.mp3
+*.webm
+media/
+shots/
+__pycache__/
+*.sqlite3
+*.db
+.env
+dist/
+.idea/workspace.xml
+.idea/shelf/
+PLAN.md
+STATE.md

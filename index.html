@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SpiralCheck: spiral drawing tremor self-check</title>
+  <meta name="description" content="Trace an Archimedes spiral and see drawing smoothness and tremor frequency. Runs fully in your browser. Not a medical device.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 16m0 0a2 2 0 1 1 4 0a5 5 0 1 1-10 0a8 8 0 1 1 16 0a11 11 0 1 1-22 0' fill='none' stroke='%230b5f5b' stroke-width='2.5'/%3E%3C/svg%3E">
+</head>
+<body>
+  <a class="skip" href="#report">Skip to report</a>
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true" class="logo"><path d="M16 16m0 0a2 2 0 1 1 4 0a5 5 0 1 1-10 0a8 8 0 1 1 16 0a11 11 0 1 1-22 0" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <div>
+        <h1>SpiralCheck</h1>
+        <p class="tag">Trace a spiral. See how steady your hand is.</p>
+      </div>
+    </div>
+    <p class="privacy-pill" title="All analysis runs in this browser tab">Private by design: nothing leaves your device</p>
+  </header>
+
+  <aside class="disclaimer" role="note" aria-label="Medical disclaimer">
+    <strong>Not a medical device.</strong> SpiralCheck is for education and personal self-tracking only. It does not diagnose, screen for, or monitor any condition, and its numbers are not clinically validated. If you are worried about a tremor or any symptom, talk to a doctor.
+  </aside>
+
+  <main class="layout">
+    <section class="card draw-card" aria-labelledby="draw-h">
+      <div class="card-head">
+        <h2 id="draw-h">1. Trace the spiral</h2>
+        <label class="hand">Hand
+          <select id="hand">
+            <option value="right">Right</option>
+            <option value="left">Left</option>
+          </select>
+        </label>
+      </div>
+      <p class="hint" id="draw-hint">Start at the center dot and follow the grey guide outward at a comfortable pace, without lifting. Mouse, finger, or stylus all work.</p>
+      <div class="canvas-wrap">
+        <canvas id="pad" role="img" aria-describedby="draw-hint" aria-label="Drawing area with a guide spiral. Use a pointer to trace it, or press Play demo."></canvas>
+        <div class="demo-badge" id="demo-badge" hidden>Demo: synthetic 6 Hz tremor</div>
+      </div>
+      <div class="controls">
+        <button id="btn-analyze" class="primary" type="button" disabled>Analyze</button>
+        <button id="btn-clear" type="button">Clear</button>
+        <button id="btn-demo" type="button">Play demo</button>
+      </div>
+      <p class="status" id="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card report-card" id="report" aria-labelledby="report-h" tabindex="-1">
+      <h2 id="report-h">2. Report</h2>
+      <div id="report-empty" class="empty">
+        <p>Your results appear here after you press <b>Analyze</b>.</p>
+        <p>No time to draw? Press <b>Play demo</b> to watch a synthetic drawing with a 6 Hz tremor being analyzed.</p>
+      </div>
+      <div id="report-body" hidden>
+        <div class="score-row">
+          <div class="score" aria-label="Smoothness score">
+            <span id="r-score" class="score-num">0</span><span class="score-of">/100</span>
+            <span class="score-label">smoothness</span>
+          </div>
+          <p id="r-summary" class="summary"></p>
+        </div>
+        <dl class="metrics">
+          <div><dt>Tremor frequency</dt><dd id="r-freq"></dd></div>
+          <div><dt>Tremor amplitude</dt><dd id="r-amp"></dd></div>
+          <div><dt>RMS deviation</dt><dd id="r-rms"></dd></div>
+          <div><dt>Max deviation</dt><dd id="r-max"></dd></div>
+          <div><dt>Drawing speed</dt><dd id="r-speed"></dd></div>
+          <div><dt>Loop evenness</dt><dd id="r-tight"></dd></div>
+        </dl>
+        <figure class="plot">
+          <figcaption>Radial error over time (high-passed, px)</figcaption>
+          <canvas id="plot-err" role="img" aria-label="Line plot of radial drawing error over time"></canvas>
+        </figure>
+        <figure class="plot">
+          <figcaption>Spectrum of radial error (shaded: typical 4 to 12 Hz tremor band)</figcaption>
+          <canvas id="plot-spec" role="img" aria-label="Power spectrum of the radial error with the tremor peak marked"></canvas>
+        </figure>
+        <details class="how">
+          <summary>How these numbers are computed</summary>
+          <p>The app fits an ideal Archimedes spiral (r = a + b&middot;&theta;) to your trace, measures how far each point sits from it along the radius, resamples that error to 100 Hz, removes slow drift, and finds the strongest rhythm between 3 and 15 Hz with a Welch spectrum. Amplitude is half the peak-to-peak size of that rhythm. Score = 100 &middot; exp(&minus;(4D + 8T + C)), where D and T are RMS deviation and tremor amplitude divided by the loop spacing and C is the variation in loop spacing. Distances are CSS pixels; mm values assume a nominal 96 px per inch and depend on your screen.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="card history-card" aria-labelledby="hist-h">
+      <div class="card-head">
+        <h2 id="hist-h">3. Your history <span class="muted">(stored only in this browser)</span></h2>
+        <div class="controls small">
+          <button id="btn-export" type="button">Export history CSV</button>
+          <button id="btn-trace" type="button" disabled>Export last trace CSV</button>
+          <button id="btn-wipe" type="button" class="danger">Delete history</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <caption class="sr-only">Saved spiral results, newest first</caption>
+          <thead><tr><th scope="col">Date</th><th scope="col">Hand</th><th scope="col">Score</th><th scope="col">Tremor Hz</th><th scope="col">Amp px</th><th scope="col">RMS px</th><th scope="col">Speed px/s</th></tr></thead>
+          <tbody id="hist-body"></tbody>
+        </table>
+        <p id="hist-empty" class="empty">No saved results yet. Each analyzed drawing (not the demo) is saved here.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>SpiralCheck is open source (MIT). Built with Claude Code, an AI coding agent, directed by Ferbin Richard. No trackers, no cookies, no network calls.</p>
+  </footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

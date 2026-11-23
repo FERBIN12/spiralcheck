@@ -1,0 +1,13 @@
+{
+  "name": "spiralcheck",
+  "version": "0.1.0",
+  "description": "Browser Archimedes spiral drawing test with tremor frequency analysis. Not a medical device.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test",
+    "validate": "node tools/validate.mjs",
+    "serve": "python3 -m http.server 8000"
+  }
+}
